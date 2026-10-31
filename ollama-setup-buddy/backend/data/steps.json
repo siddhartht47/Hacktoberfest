@@ -1,0 +1,138 @@
+{
+  "hardware_help": {
+    "windows": [
+      "RAM: press Ctrl+Shift+Esc, open Performance, then Memory.",
+      "GPU memory (VRAM): Performance, then GPU, then \"Dedicated GPU memory\". With an NVIDIA card you can also run `nvidia-smi` in PowerShell. No dedicated GPU? Enter 0.",
+      "Free disk: open File Explorer, then This PC, and read the space under your C: drive."
+    ],
+    "macos": [
+      "RAM: Apple menu, then About This Mac. On Apple Silicon this memory is shared with the GPU, so you can enter the same number as VRAM.",
+      "Free disk: Apple menu, System Settings, General, Storage.",
+      "Intel Mac without a dedicated GPU? Enter 0 for VRAM."
+    ],
+    "linux": [
+      "RAM: run `free -h` and read the \"total\" column.",
+      "GPU memory (VRAM): run `nvidia-smi` for NVIDIA cards. No dedicated GPU? Enter 0.",
+      "Free disk: run `df -h ~` and read the \"Avail\" column."
+    ]
+  },
+  "steps": [
+    {
+      "id": "install",
+      "title": "Install Ollama",
+      "explain": "Ollama is the free program that downloads and runs open-source AI models on your own computer. You install it once and it works for every model.",
+      "commands": {
+        "windows": ["irm https://ollama.com/install.ps1 | iex"],
+        "macos": ["brew install ollama"],
+        "linux": ["curl -fsSL https://ollama.com/install.sh | sh"]
+      },
+      "notes": {
+        "windows": "Open PowerShell as Administrator first: press Start, type PowerShell, right-click it and choose Run as administrator. Prefer a normal installer? Download it from https://ollama.com/download instead.",
+        "macos": "No Homebrew? Download the Ollama app from https://ollama.com/download, move it into Applications and open it once. In that case you can skip this command and just paste anything to continue, or press Skip.",
+        "linux": "The script may ask for your password (sudo). Nothing appears while you type it. That is normal."
+      },
+      "expected": "The command finishes without red error text. Paste whatever the terminal printed.",
+      "success_message": "Looks fine. The next step is the real test.",
+      "check": {"mode": "nonempty", "min_len": 1}
+    },
+    {
+      "id": "version",
+      "title": "Check that Ollama is installed",
+      "explain": "Close your terminal and open a new one so it notices the fresh install. Then ask Ollama for its version.",
+      "commands": {"default": ["ollama --version"]},
+      "notes": {},
+      "expected": "A line such as: ollama version is 0.x.x",
+      "success_message": "Ollama is installed.",
+      "success_notes": [
+        {"pattern": "could not connect|not running", "message": "The warning only means the Ollama server is not running yet. The next step checks it."}
+      ],
+      "check": {"mode": "regex", "success": ["ollama version( is)? \\d", "version\\D{1,6}\\d+\\.\\d+\\.\\d+"]}
+    },
+    {
+      "id": "server",
+      "title": "Make sure the Ollama server is running",
+      "explain": "Ollama works quietly in the background and answers on port 11434. This check asks whether it is awake.",
+      "commands": {
+        "windows": ["Invoke-RestMethod http://localhost:11434"],
+        "default": ["curl http://localhost:11434"]
+      },
+      "notes": {
+        "windows": "If it fails, open the Ollama app from the Start menu, wait about 10 seconds and try again.",
+        "macos": "If it fails, open the Ollama app, or run `brew services start ollama`, or run `ollama serve` in a second terminal and leave it open.",
+        "linux": "If it fails, run `sudo systemctl start ollama`, or run `ollama serve` in a second terminal and leave it open."
+      },
+      "expected": "The text: Ollama is running",
+      "success_message": "The Ollama server is running.",
+      "check": {"mode": "regex", "success": ["Ollama is running"]}
+    },
+    {
+      "id": "pull",
+      "title": "Download the model: {tag}",
+      "explain": "This downloads the model files ({size}). It can take several minutes depending on your internet. Progress bars are normal.",
+      "commands": {"default": ["ollama pull {tag}"]},
+      "notes": {"default": "You can stop with Ctrl+C and run the same command later. The download resumes where it stopped."},
+      "expected": "The output ends with the word: success",
+      "success_message": "{tag} is downloaded.",
+      "check": {"mode": "regex", "success": ["\\bsuccess\\b"]}
+    },
+    {
+      "id": "list",
+      "title": "Confirm the model is on your computer",
+      "explain": "This lists every model stored on your machine.",
+      "commands": {"default": ["ollama list"]},
+      "notes": {},
+      "expected": "A table with a row for {tag}.",
+      "success_message": "{tag} is installed.",
+      "check": {"mode": "regex", "success": ["{tag}"]}
+    },
+    {
+      "id": "run",
+      "title": "Talk to the model",
+      "explain": "Ask {tag} a question straight from the terminal. The first run loads the model into memory, so it can take a little while.",
+      "commands": {"default": ["ollama run {tag} \"What is open-source software?\""]},
+      "notes": {"default": "For a back-and-forth chat run `ollama run {tag}` instead, and type `/bye` to leave."},
+      "expected": "A short answer in plain English.",
+      "success_message": "It works. You are running an open-source AI model on your own computer.",
+      "check": {"mode": "nonempty", "min_len": 25}
+    },
+    {
+      "id": "api",
+      "title": "Optional: check the local API",
+      "explain": "Your own programs can talk to the model through this local address. This is how apps like this one use Ollama.",
+      "commands": {
+        "windows": ["Invoke-RestMethod http://localhost:11434/api/tags"],
+        "default": ["curl http://localhost:11434/api/tags"]
+      },
+      "notes": {},
+      "expected": "A list that includes {tag}.",
+      "success_message": "The local API answers and knows your model.",
+      "optional": true,
+      "check": {"mode": "regex", "success": ["{tag}"]}
+    },
+    {
+      "id": "python",
+      "title": "Optional: check Python",
+      "explain": "If you want to use the model from your own code, you need Python 3.10 or newer.",
+      "commands": {
+        "windows": ["python --version"],
+        "default": ["python3 --version"]
+      },
+      "notes": {},
+      "expected": "Python 3.10 or newer, for example Python 3.12.4",
+      "success_message": "Python is ready.",
+      "optional": true,
+      "check": {"mode": "regex", "success": ["Python 3\\.(1\\d|[2-9]\\d)"]}
+    },
+    {
+      "id": "git",
+      "title": "Optional: check Git",
+      "explain": "Git lets you download and share code projects.",
+      "commands": {"default": ["git --version"]},
+      "notes": {},
+      "expected": "A line such as: git version 2.45.0",
+      "success_message": "Git is ready.",
+      "optional": true,
+      "check": {"mode": "regex", "success": ["git version \\d"]}
+    }
+  ]
+}

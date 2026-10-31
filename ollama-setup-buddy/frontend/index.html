@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ollama Setup Buddy</title>
+  <meta name="description" content="Step-by-step help to install and run open-source AI models on your own computer.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <a class="brand" href="/">Ollama Setup Buddy</a>
+      <span id="helper-status" class="muted small" aria-live="polite">Checking helper AI…</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <ol class="crumbs" id="crumbs" aria-label="Progress">
+      <li data-screen="computer">1. Your computer</li>
+      <li data-screen="model">2. Model</li>
+      <li data-screen="setup">3. Install</li>
+    </ol>
+
+    <!-- Screen 1: computer -->
+    <section id="screen-computer" class="screen">
+      <h1>Run open-source AI on your own computer</h1>
+      <p class="lead">Tell us about your computer. We suggest models that fit, then walk you through the install one step at a time and check each result with you.</p>
+
+      <form id="form-computer" novalidate>
+        <fieldset>
+          <legend>Operating system</legend>
+          <div class="segmented" id="os-choice">
+            <label><input type="radio" name="os" value="windows"><span>Windows</span></label>
+            <label><input type="radio" name="os" value="macos"><span>macOS</span></label>
+            <label><input type="radio" name="os" value="linux"><span>Linux</span></label>
+          </div>
+        </fieldset>
+
+        <div class="grid">
+          <div class="field">
+            <label for="ram">RAM (GB)</label>
+            <input id="ram" type="number" min="1" step="1" inputmode="decimal" placeholder="e.g. 8" required>
+          </div>
+          <div class="field">
+            <label for="vram">GPU memory / VRAM (GB)</label>
+            <input id="vram" type="number" min="0" step="1" inputmode="decimal" placeholder="0 if none">
+          </div>
+          <div class="field">
+            <label for="disk">Free disk space (GB)</label>
+            <input id="disk" type="number" min="0" step="1" inputmode="decimal" placeholder="e.g. 50">
+          </div>
+          <div class="field">
+            <label for="goal">What will you use it for?</label>
+            <select id="goal">
+              <option value="chat">General chat and questions</option>
+              <option value="coding">Coding help</option>
+              <option value="reasoning">Reasoning and maths</option>
+              <option value="light">Lightest possible (old laptop)</option>
+            </select>
+          </div>
+        </div>
+
+        <details class="how">
+          <summary>How do I find these numbers?</summary>
+          <ul id="hw-help"></ul>
+          <p>You can check them in your computer's system information by clicking win + I and searching for "System Information"</p>
+        </details>
+
+        <p id="computer-error" class="error" role="alert" hidden></p>
+        <div class="actions">
+          <button type="submit" class="btn primary">See models that fit</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Screen 2: model -->
+    <section id="screen-model" class="screen" hidden>
+      <h2>Pick a model</h2>
+      <p class="muted">Ratings are based on the numbers you entered. Sizes are approximate.</p>
+      <div id="model-list" class="model-list" role="radiogroup" aria-label="Models"></div>
+
+      <div class="field custom">
+        <label for="custom-tag">Or type any model name from ollama.com/library</label>
+        <input id="custom-tag" type="text" placeholder="e.g. mistral:7b" autocomplete="off" spellcheck="false">
+      </div>
+
+      <p id="model-error" class="error" role="alert" hidden></p>
+      <div class="actions">
+        <button type="button" id="btn-model-back" class="btn ghost">← Back</button>
+        <button type="button" id="btn-start" class="btn primary">Start setup</button>
+      </div>
+    </section>
+
+    <!-- Screen 3: guided setup -->
+    <section id="screen-setup" class="screen" hidden>
+      <div class="progress">
+        <div class="progress-meta">
+          <span id="step-count"></span>
+          <span id="model-label" class="muted"></span>
+        </div>
+        <div class="bar"><div id="bar-fill"></div></div>
+      </div>
+
+      <article class="card" id="step-card">
+        <h2 id="step-title"></h2>
+        <p id="step-explain"></p>
+        <div id="step-commands"></div>
+        <p id="step-note" class="note" hidden></p>
+        <p class="expected"><strong>You should see:</strong> <span id="step-expected"></span></p>
+
+        <label for="output">Paste the output here</label>
+        <textarea id="output" rows="6" spellcheck="false" placeholder="Copy everything the terminal printed and paste it here"></textarea>
+        <div class="actions">
+          <button type="button" id="btn-check" class="btn primary">Check my output</button>
+          <button type="button" id="btn-skip" class="btn ghost">Skip this step</button>
+        </div>
+        <div id="result" aria-live="polite"></div>
+      </article>
+
+      <div class="actions">
+        <button type="button" id="btn-prev" class="btn ghost">← Previous step</button>
+      </div>
+    </section>
+
+    <!-- Screen 4: done -->
+    <section id="screen-done" class="screen" hidden>
+      <h2>You're all set</h2>
+      <p class="lead" id="done-text"></p>
+      <div class="card">
+        <h3>Handy commands</h3>
+        <div id="done-commands"></div>
+      </div>
+      <div class="actions">
+        <button type="button" id="btn-restart" class="btn">Start over</button>
+      </div>
+    </section>
+
+    <!-- Free-text help (shown during setup) -->
+    <section id="help" class="card help" hidden>
+      <h3>Stuck? Ask in your own words</h3>
+      <textarea id="question" rows="3" placeholder="e.g. The download keeps stopping at 90%"></textarea>
+      <div class="actions">
+        <button type="button" id="btn-ask" class="btn">Ask for help</button>
+        <label class="check"><input type="checkbox" id="use-ai" checked> Use helper AI</label>
+      </div>
+      <div id="answer" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <p class="muted small">Open source. Nothing you type leaves your computer unless you host this app elsewhere. Commands are never run for you; you copy and run them yourself.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

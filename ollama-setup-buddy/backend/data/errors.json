@@ -1,0 +1,364 @@
+{
+  "errors": [
+    {
+      "id": "ollama_not_found",
+      "title": "The terminal can't find Ollama",
+      "patterns": [
+        "'ollama' is not recognized",
+        "term 'ollama' is not recognized",
+        "ollama: command not found",
+        "command not found: ollama",
+        "ollama: not found"
+      ],
+      "keywords": ["ollama", "not recognized", "command not found", "path", "not installed", "cannot find"],
+      "cause": "Ollama is not installed yet, or this terminal window was opened before the install finished, so it does not know where Ollama is.",
+      "fix": [
+        "Close this terminal completely and open a new one.",
+        "Run `ollama --version` again.",
+        "If it still fails, repeat the install step and watch for error messages.",
+        "Windows: restart the PC once if a new terminal does not help. This refreshes the PATH setting.",
+        "Linux and macOS: run `which ollama` to see whether the program exists."
+      ]
+    },
+    {
+      "id": "server_not_running",
+      "title": "Ollama is installed but its server is not running",
+      "patterns": [
+        "could not connect to a running Ollama",
+        "(connection refused|econnrefused|failed to connect|unable to connect|couldn't connect).*(localhost|127\\.0\\.0\\.1|11434)",
+        "(localhost|127\\.0\\.0\\.1|11434).*(connection refused|econnrefused)",
+        "unable to connect to the remote server"
+      ],
+      "keywords": ["server", "connect", "connection", "refused", "11434", "not running", "localhost", "offline"],
+      "cause": "Ollama works as a small background server. The commands talk to it, and right now nothing is answering on port 11434.",
+      "fix": [
+        "Windows and macOS: open the Ollama app from the Start menu or Applications and wait a few seconds.",
+        "Any system: open a second terminal, run `ollama serve`, and keep that window open.",
+        "Linux with systemd: run `systemctl status ollama` and, if it is stopped, run `sudo systemctl start ollama`.",
+        "Then test again with `curl http://localhost:11434` (Windows: `Invoke-RestMethod http://localhost:11434`)."
+      ]
+    },
+    {
+      "id": "port_in_use",
+      "title": "Port 11434 is already in use",
+      "patterns": [
+        "address already in use",
+        "only one usage of each socket address",
+        "bind: .*(in use|forbidden)",
+        "listen tcp .*11434"
+      ],
+      "keywords": ["port", "in use", "already", "11434", "bind", "address", "serve"],
+      "cause": "Another copy of Ollama, or another program, is already using the port Ollama needs. Most often Ollama is simply already running, which is fine.",
+      "fix": [
+        "First test whether Ollama already works: `curl http://localhost:11434` (Windows: `Invoke-RestMethod http://localhost:11434`). If it says \"Ollama is running\", skip `ollama serve` and carry on.",
+        "Windows: find the program using the port with `netstat -ano | findstr 11434`.",
+        "Linux and macOS: find it with `lsof -i :11434`.",
+        "Quit the extra Ollama copy (tray icon, then Quit) and start Ollama once."
+      ]
+    },
+    {
+      "id": "model_not_found",
+      "title": "Ollama doesn't know that model name",
+      "patterns": [
+        "pull model manifest: file does not exist",
+        "model ['\"].*['\"] not found",
+        "manifest for .* not found",
+        "file does not exist"
+      ],
+      "keywords": ["model", "not found", "manifest", "name", "tag", "wrong", "typo", "exist"],
+      "cause": "The model name or tag is misspelled, or that tag does not exist in the Ollama library.",
+      "fix": [
+        "Check the exact name and tag on https://ollama.com/library (for example `gemma3:1b`).",
+        "Names use a colon between model and size: `llama3.2:3b`, not `llama3.2-3b`.",
+        "See what you already have with `ollama list`.",
+        "Copy the command from this page again instead of retyping it."
+      ]
+    },
+    {
+      "id": "not_enough_memory",
+      "title": "Your computer doesn't have enough memory for this model",
+      "patterns": [
+        "requires more system memory",
+        "model requires more",
+        "out of memory",
+        "insufficient memory",
+        "unable to allocate",
+        "cudamalloc failed",
+        "not enough memory"
+      ],
+      "keywords": ["memory", "ram", "out of memory", "crash", "too big", "large", "killed", "freeze", "requires more"],
+      "cause": "Models are loaded fully into RAM or GPU memory. This one is bigger than what is free right now.",
+      "fix": [
+        "Close browsers and other heavy programs, then try again.",
+        "Go back to the model list and pick a smaller model marked \"Fast\" or \"Runs on your CPU\".",
+        "Small versions such as `gemma3:1b` or `llama3.2:1b` need about 4 GB of RAM.",
+        "Restart the computer to free memory if it has been on for days."
+      ]
+    },
+    {
+      "id": "disk_full",
+      "title": "There isn't enough free disk space",
+      "patterns": [
+        "no space left on device",
+        "not enough (disk )?space",
+        "there is not enough space on the disk",
+        "disk full",
+        "insufficient disk"
+      ],
+      "keywords": ["disk", "space", "storage", "full", "gb"],
+      "cause": "The download needs room for the whole model plus some working space, and the drive is almost full.",
+      "fix": [
+        "Free up at least the model size plus 2 GB: empty the recycle bin or bin and delete large unused files.",
+        "Remove models you no longer need with `ollama rm <model>` (see them with `ollama list`).",
+        "Run the same `ollama pull` command again. The download resumes where it stopped.",
+        "Still tight? Choose a smaller model."
+      ]
+    },
+    {
+      "id": "network_failure",
+      "title": "The download failed because of a network problem",
+      "patterns": [
+        "tls handshake timeout",
+        "i/o timeout",
+        "no such host",
+        "connection reset by peer",
+        "unexpected eof",
+        "lookup .* on .*:53",
+        "context deadline exceeded",
+        "could not resolve host",
+        "temporary failure in name resolution",
+        "client\\.timeout",
+        "x509"
+      ],
+      "keywords": ["network", "internet", "timeout", "download", "wifi", "proxy", "vpn", "dns", "slow download", "certificate", "stuck download"],
+      "cause": "Ollama could not finish talking to the download servers. This is usually a weak connection, a VPN, or a school or office firewall.",
+      "fix": [
+        "Check your internet and run the same `ollama pull` command again. Downloads resume where they stopped.",
+        "Turn off any VPN, or switch to another network such as a phone hotspot.",
+        "College and office Wi-Fi often block large downloads. Try a different network.",
+        "A certificate (x509) error means the network is inspecting secure traffic. Use a different network."
+      ]
+    },
+    {
+      "id": "powershell_policy",
+      "title": "PowerShell is blocking the script",
+      "os": ["windows"],
+      "patterns": [
+        "running scripts is disabled",
+        "cannot be loaded because running scripts",
+        "pssecurityexception",
+        "unauthorizedaccess"
+      ],
+      "keywords": ["powershell", "script", "policy", "execution", "disabled", "blocked", "unauthorized"],
+      "cause": "Windows can restrict which PowerShell scripts may run. This is a safety setting, not a fault with your PC.",
+      "fix": [
+        "In the same PowerShell window run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned`. It only affects the current window.",
+        "Run the install command again in that window.",
+        "Or skip the script and download the installer from https://ollama.com/download."
+      ]
+    },
+    {
+      "id": "permission_denied",
+      "title": "You need administrator (sudo) rights",
+      "os": ["linux", "macos"],
+      "patterns": [
+        "permission denied",
+        "must be root",
+        "need to be root",
+        "operation not permitted",
+        "are you root",
+        "not in the sudoers"
+      ],
+      "keywords": ["permission", "denied", "sudo", "root", "admin", "administrator"],
+      "cause": "Installing system software needs administrator rights, and this account or command does not have them.",
+      "fix": [
+        "Run the install again and type your password when `sudo` asks. Nothing shows while you type, which is normal.",
+        "Your account must be allowed to use sudo. On a shared or school computer ask the administrator.",
+        "If you cannot get admin rights, use a personal computer for this."
+      ]
+    },
+    {
+      "id": "windows_admin",
+      "title": "Windows needs administrator rights",
+      "os": ["windows"],
+      "patterns": [
+        "access is denied",
+        "requires elevation",
+        "run as administrator",
+        "administrator privileges"
+      ],
+      "keywords": ["administrator", "admin", "access denied", "elevation", "denied"],
+      "cause": "The install needs to change system settings and PowerShell was not opened as an administrator.",
+      "fix": [
+        "Close PowerShell.",
+        "Press Start, type PowerShell, right-click it and choose Run as administrator.",
+        "Run the install command again."
+      ]
+    },
+    {
+      "id": "curl_missing",
+      "title": "curl is not installed",
+      "os": ["linux", "macos"],
+      "patterns": [
+        "curl: command not found",
+        "curl: not found",
+        "command not found: curl"
+      ],
+      "keywords": ["curl", "missing"],
+      "cause": "The install command downloads Ollama with a tool called curl, which this system does not have yet.",
+      "fix": [
+        "Ubuntu or Debian: `sudo apt update && sudo apt install -y curl`",
+        "Fedora: `sudo dnf install -y curl`",
+        "Arch: `sudo pacman -S curl`",
+        "Then run the install command again."
+      ]
+    },
+    {
+      "id": "gpu_problem",
+      "title": "There is a problem with the graphics card (GPU) setup",
+      "patterns": [
+        "no cuda-capable device",
+        "cuda error",
+        "nvidia-smi has failed",
+        "driver/library version mismatch",
+        "unable to load cuda",
+        "no compatible gpus",
+        "failed to initialize nvml",
+        "falling back to cpu",
+        "cuda driver version is insufficient"
+      ],
+      "keywords": ["gpu", "cuda", "nvidia", "driver", "graphics", "vram"],
+      "cause": "Ollama tried to use your NVIDIA GPU but the driver is missing, outdated or mismatched. Ollama can still run on the CPU, only more slowly.",
+      "fix": [
+        "Update the NVIDIA driver from nvidia.com or your laptop maker, then restart the computer.",
+        "Check that the card is visible with `nvidia-smi`.",
+        "No NVIDIA GPU? That is not an error. Models simply run on the CPU.",
+        "Meanwhile choose a smaller model so CPU speed is acceptable."
+      ]
+    },
+    {
+      "id": "model_crash",
+      "title": "The model process crashed",
+      "patterns": [
+        "llama runner process has terminated",
+        "model runner has unexpectedly stopped",
+        "runner process no longer running"
+      ],
+      "keywords": ["crash", "crashed", "terminated", "runner", "stopped", "exit status"],
+      "cause": "The part of Ollama that runs the model stopped unexpectedly. The usual causes are too little memory or a GPU driver problem.",
+      "fix": [
+        "Try a smaller model.",
+        "Update Ollama by installing it again, then check `ollama --version`.",
+        "Update your GPU driver and restart the computer.",
+        "Restart the server: quit Ollama and start it again, or run `ollama serve`."
+      ]
+    },
+    {
+      "id": "python_missing",
+      "title": "Python is not installed or not on your PATH",
+      "patterns": [
+        "python was not found",
+        "'python' is not recognized",
+        "term 'python' is not recognized",
+        "python: command not found",
+        "python3: command not found"
+      ],
+      "keywords": ["python", "pip", "interpreter"],
+      "cause": "Python is missing, or the terminal does not know where it is.",
+      "fix": [
+        "Install Python 3.10 or newer from https://www.python.org/downloads/ (on Windows tick \"Add python.exe to PATH\").",
+        "Close and reopen the terminal.",
+        "Windows uses `python --version`, macOS and Linux use `python3 --version`.",
+        "If the Microsoft Store opens, turn off the python alias under Settings, Apps, Advanced app settings, App execution aliases."
+      ]
+    },
+    {
+      "id": "python_old",
+      "title": "Your Python version is too old",
+      "patterns": ["python 2\\.", "python 3\\.[0-9]\\b"],
+      "keywords": ["old", "version", "upgrade"],
+      "cause": "Most AI libraries need Python 3.10 or newer.",
+      "fix": [
+        "Install the latest Python from https://www.python.org/downloads/.",
+        "Reopen the terminal and check again."
+      ]
+    },
+    {
+      "id": "git_missing",
+      "title": "Git is not installed",
+      "patterns": [
+        "'git' is not recognized",
+        "term 'git' is not recognized",
+        "git: command not found",
+        "command not found: git"
+      ],
+      "keywords": ["git", "github", "clone"],
+      "cause": "Git is missing, or the terminal does not know where it is.",
+      "fix": [
+        "Download it from https://git-scm.com/downloads and install it with the default options.",
+        "On Ubuntu or Debian you can run `sudo apt install -y git`.",
+        "Close and reopen the terminal, then check again."
+      ]
+    },
+    {
+      "id": "mac_blocked",
+      "title": "macOS blocked the app",
+      "os": ["macos"],
+      "patterns": [
+        "cannot be opened because",
+        "developer cannot be verified",
+        "is damaged and can't be opened",
+        "apple cannot check"
+      ],
+      "keywords": ["mac", "blocked", "verified", "developer", "gatekeeper", "damaged", "opened"],
+      "cause": "macOS asks you to confirm apps that were downloaded from the internet.",
+      "fix": [
+        "Open System Settings, then Privacy & Security, scroll down and click \"Open Anyway\" next to Ollama.",
+        "Download Ollama only from https://ollama.com/download.",
+        "Move Ollama into the Applications folder and open it again."
+      ]
+    },
+    {
+      "id": "systemd_missing",
+      "title": "systemd is not available (common in WSL and containers)",
+      "os": ["linux"],
+      "patterns": [
+        "system has not been booted with systemd",
+        "failed to connect to bus",
+        "systemd.*not (running|available)"
+      ],
+      "keywords": ["systemd", "systemctl", "wsl", "container", "docker"],
+      "cause": "This Linux environment does not run background services the usual way, so Ollama cannot start itself.",
+      "fix": [
+        "Start Ollama by hand in a second terminal window with `ollama serve`.",
+        "Leave that window open while you use `ollama pull` and `ollama run` in the first one."
+      ]
+    },
+    {
+      "id": "too_slow",
+      "title": "The model is very slow",
+      "patterns": [],
+      "keywords": ["slow", "slowly", "lag", "laggy", "freezing", "freezes", "hangs", "takes forever", "long time", "fan", "cpu", "speed", "taking long"],
+      "cause": "Large models on a computer without a strong GPU generate text slowly because the CPU does all the work. The very first answer is also slower because the model has to load.",
+      "fix": [
+        "Use a smaller model (1B to 4B parameters).",
+        "Close other programs to free memory.",
+        "Check whether your GPU is used: run `ollama ps` while a model is loaded and read the PROCESSOR column.",
+        "Give the first answer a minute. Later answers are faster."
+      ]
+    },
+    {
+      "id": "download_stuck",
+      "title": "The download seems stuck",
+      "patterns": [],
+      "keywords": ["stuck", "stops", "stopped", "99", "90", "progress", "frozen", "pull", "pulling", "download", "never finishes"],
+      "cause": "Models are several gigabytes and speed varies a lot. Short pauses near the end are normal while Ollama checks the files.",
+      "fix": [
+        "Wait a few minutes. Watch whether the numbers still change.",
+        "If nothing moves for 5 minutes, press Ctrl+C and run the same `ollama pull` command again. It resumes.",
+        "Try another network or turn off your VPN.",
+        "Pick a smaller model if your connection is slow."
+      ]
+    }
+  ]
+}

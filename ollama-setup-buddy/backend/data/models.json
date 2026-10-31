@@ -1,0 +1,20 @@
+{
+  "catalog_note": "Sizes are approximate download sizes of the default (quantized) builds. Verify tags and sizes at https://ollama.com/library before you rely on them.",
+  "models": [
+    {"tag": "gemma3:12b", "name": "Gemma 3 12B", "family": "Gemma", "params_b": 12, "size_gb": 8.1, "min_ram_gb": 16, "rec_ram_gb": 16, "goals": ["chat", "reasoning"], "blurb": "Larger Gemma 3 from Google. Great quality, best with a GPU."},
+    {"tag": "gemma3:4b", "name": "Gemma 3 4B", "family": "Gemma", "params_b": 4, "size_gb": 3.3, "min_ram_gb": 8, "rec_ram_gb": 8, "goals": ["chat"], "blurb": "A good balance of quality and speed from Google."},
+    {"tag": "gemma3:1b", "name": "Gemma 3 1B", "family": "Gemma", "params_b": 1, "size_gb": 0.8, "min_ram_gb": 4, "rec_ram_gb": 4, "goals": ["chat", "light"], "blurb": "Tiny and fast. The safest first model for any laptop."},
+    {"tag": "llama3.1:8b", "name": "Llama 3.1 8B", "family": "Llama", "params_b": 8, "size_gb": 4.9, "min_ram_gb": 8, "rec_ram_gb": 16, "goals": ["chat"], "blurb": "Meta's popular all-rounder."},
+    {"tag": "llama3.2:3b", "name": "Llama 3.2 3B", "family": "Llama", "params_b": 3, "size_gb": 2.0, "min_ram_gb": 4, "rec_ram_gb": 8, "goals": ["chat", "light"], "blurb": "Small Llama that runs well on modest laptops."},
+    {"tag": "llama3.2:1b", "name": "Llama 3.2 1B", "family": "Llama", "params_b": 1, "size_gb": 1.3, "min_ram_gb": 4, "rec_ram_gb": 4, "goals": ["light", "chat"], "blurb": "The smallest Llama. Fast, good for simple tasks."},
+    {"tag": "mistral:7b", "name": "Mistral 7B", "family": "Mistral", "params_b": 7, "size_gb": 4.1, "min_ram_gb": 8, "rec_ram_gb": 16, "goals": ["chat"], "blurb": "Mistral AI's well-known model, strong for its size."},
+    {"tag": "qwen3:8b", "name": "Qwen 3 8B", "family": "Qwen", "params_b": 8, "size_gb": 5.2, "min_ram_gb": 8, "rec_ram_gb": 16, "goals": ["chat", "reasoning"], "blurb": "Alibaba's capable all-rounder, multilingual."},
+    {"tag": "qwen3:4b", "name": "Qwen 3 4B", "family": "Qwen", "params_b": 4, "size_gb": 2.5, "min_ram_gb": 8, "rec_ram_gb": 8, "goals": ["chat", "reasoning"], "blurb": "Compact Qwen with solid reasoning."},
+    {"tag": "qwen3:1.7b", "name": "Qwen 3 1.7B", "family": "Qwen", "params_b": 1.7, "size_gb": 1.4, "min_ram_gb": 4, "rec_ram_gb": 4, "goals": ["light", "chat"], "blurb": "Very small Qwen for low-end machines."},
+    {"tag": "phi4-mini", "name": "Phi-4 Mini", "family": "Phi", "params_b": 3.8, "size_gb": 2.5, "min_ram_gb": 8, "rec_ram_gb": 8, "goals": ["reasoning", "chat"], "blurb": "Microsoft's compact model, good at reasoning and maths."},
+    {"tag": "deepseek-r1:8b", "name": "DeepSeek-R1 8B", "family": "DeepSeek", "params_b": 8, "size_gb": 5.2, "min_ram_gb": 8, "rec_ram_gb": 16, "goals": ["reasoning"], "blurb": "Shows its step-by-step thinking. Slower but thorough."},
+    {"tag": "deepseek-r1:1.5b", "name": "DeepSeek-R1 1.5B", "family": "DeepSeek", "params_b": 1.5, "size_gb": 1.1, "min_ram_gb": 4, "rec_ram_gb": 4, "goals": ["reasoning", "light"], "blurb": "Smallest reasoning model; fine for trying the idea."},
+    {"tag": "qwen2.5-coder:7b", "name": "Qwen 2.5 Coder 7B", "family": "Qwen", "params_b": 7, "size_gb": 4.7, "min_ram_gb": 8, "rec_ram_gb": 16, "goals": ["coding"], "blurb": "Tuned for writing and explaining code."},
+    {"tag": "qwen2.5-coder:1.5b", "name": "Qwen 2.5 Coder 1.5B", "family": "Qwen", "params_b": 1.5, "size_gb": 1.0, "min_ram_gb": 4, "rec_ram_gb": 4, "goals": ["coding", "light"], "blurb": "A small coding helper for low-end laptops."}
+  ]
+}
